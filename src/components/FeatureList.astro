@@ -1,0 +1,267 @@
+---
+import type { FeatureEntry } from '../lib/rss';
+
+export interface Props {
+  title: string;
+  features: FeatureEntry[];
+  accent: 'widely' | 'newly';
+}
+
+const { title, features, accent } = Astro.props;
+
+const accentLabel = accent === 'widely' ? 'WIDELY' : 'NEWLY';
+const accentClass = `feature-list--${accent}`;
+
+const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric'
+});
+
+const formatDate = (input: string) => {
+  if (!input) return '';
+  const value = Date.parse(input);
+  if (!Number.isFinite(value)) return '';
+  return dateFormatter.format(new Date(value));
+};
+---
+
+<section class={`feature-list ${accentClass}`}>
+  <header class="feature-list__header">
+    <p class="feature-list__label">{accentLabel}</p>
+    <h2 class="feature-list__title">{title}</h2>
+    <p class="feature-list__count">
+      <span>{features.length}</span> элементов
+    </p>
+  </header>
+
+  <ol class="feature-list__items">
+    {features.map((feature, index) => (
+      <li class="feature-card" key={feature.id}>
+        <p class="feature-card__index">
+          <span>{String(index + 1).padStart(2, '0')}</span>
+        </p>
+        <div class="feature-card__body">
+          <h3 class="feature-card__title">
+            <a href={feature.link}>{feature.title}</a>
+          </h3>
+          {feature.summaryText && (
+            <p class="feature-card__summary">{feature.summaryText}</p>
+          )}
+        </div>
+        <p class="feature-card__date">{formatDate(feature.updated)}</p>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .feature-list {
+    position: relative;
+    border-radius: 1.5rem;
+    padding: clamp(1.8rem, 3vw, 2.6rem);
+    background: var(--bg-card);
+    overflow: hidden;
+    box-shadow:
+      0.5rem 0.5rem 0 0 var(--shadow-card-offset),
+      0 16px 40px var(--shadow-card-primary);
+    border: 3px solid var(--border-strong);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.5rem, 2.5vw, 2rem);
+  }
+
+  .feature-list::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0) 42%,
+        rgba(255, 255, 255, 0.92) 70%,
+        rgba(255, 255, 255, 1) 100%
+      ),
+      repeating-linear-gradient(
+        45deg,
+        rgba(0, 0, 0, 0.04),
+        rgba(0, 0, 0, 0.04) 1px,
+        transparent 1px,
+        transparent 12px
+      );
+    opacity: 0.75;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+
+  .feature-list::after {
+    content: '';
+    position: absolute;
+    width: clamp(8rem, 16vw, 12rem);
+    height: clamp(8rem, 16vw, 12rem);
+    border-radius: 50%;
+    right: -15%;
+    top: -25%;
+    filter: blur(0);
+    transform: rotate(12deg);
+    opacity: 0.8;
+  }
+
+  .feature-list--widely {
+    border-color: #a42718;
+  }
+
+  .feature-list--newly {
+    border-color: #152c8f;
+  }
+
+  .feature-list--widely::after {
+    background: var(--bg-card-accent-widely);
+  }
+
+  .feature-list--newly::after {
+    background: var(--bg-card-accent-newly);
+  }
+
+  .feature-list__header {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .feature-list__label {
+    margin: 0;
+    letter-spacing: 0.3em;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .feature-list__title {
+    margin: 0;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    text-transform: uppercase;
+    line-height: 1.05;
+    letter-spacing: 0.06em;
+  }
+
+  .feature-list__count {
+    margin: 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .feature-list__count span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a1610;
+    color: #f7f3ea;
+    padding: 0.15em 0.6em;
+    border-radius: 2em;
+    font-weight: 600;
+    margin-right: 0.4em;
+  }
+
+  .feature-list__items {
+    position: relative;
+    z-index: 1;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 1.5vw, 1.5rem);
+  }
+
+  .feature-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.25rem;
+    align-items: start;
+    border-bottom: 1px solid var(--text-subtle);
+    padding-bottom: 1.25rem;
+  }
+
+  .feature-card:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .feature-card__index {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+
+  .feature-card__index span {
+    display: inline-block;
+    transform: translateY(-0.15em);
+  }
+
+  .feature-card__body {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .feature-card__title {
+    margin: 0;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .feature-card__title a {
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  .feature-card__title a:hover {
+    border-color: currentColor;
+  }
+
+  .feature-card__summary {
+    margin: 0;
+    font-size: 0.95rem;
+    max-width: 48ch;
+    color: var(--text-card-muted);
+  }
+
+  .feature-card__date {
+    grid-column: 2;
+    margin: 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
+  }
+
+  @media (max-width: 720px) {
+    .feature-list {
+      padding: 1.6rem;
+    }
+
+    .feature-card {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.75rem;
+    }
+
+    .feature-card__index {
+      order: -2;
+      font-size: 1rem;
+      letter-spacing: 0.24em;
+    }
+
+    .feature-card__body {
+      order: -1;
+    }
+
+    .feature-card__date {
+      grid-column: 1;
+    }
+  }
+</style>

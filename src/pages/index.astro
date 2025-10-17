@@ -1,0 +1,81 @@
+---
+import FeatureList from '../components/FeatureList.astro';
+import { fetchTimelineData } from '../lib/rss';
+import '../styles/global.css';
+
+const { widelyAvailable, newlyAvailable } = await fetchTimelineData();
+
+const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+const buildTimestamp = new Date();
+const buildTimestampISO = buildTimestamp.toISOString();
+const buildTimestampLabel = dateFormatter.format(buildTimestamp);
+---
+
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS Baseline Timeline</title>
+    <meta name="description" content="Две подборки CSS‑свойств из Baseline: widely available и newly available. Актуально, дерзко, вдохновлено Артёмом Лебедевым." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap"
+    />
+    <script is:inline>
+      (() => {
+        const STORAGE_KEY = 'css-baseline-theme';
+        if (typeof window === 'undefined') return;
+        const mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+        let storedTheme = null;
+        try {
+          storedTheme = window.localStorage.getItem(STORAGE_KEY);
+        } catch (error) {
+          storedTheme = null;
+        }
+        const theme = storedTheme ?? (mediaQuery?.matches ? 'dark' : 'light');
+        document.documentElement.dataset.theme = theme === 'dark' ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+  <body>
+    <main>
+      <header class="page-header">
+        <h1 class="page-title">
+          <span>CSS</span>
+          <strong>Baseline</strong>
+          <span>Timeline</span>
+        </h1>
+        <p class="page-subtitle">
+          Отслеживайте, какие CSS‑возможности уже доступные везде, а какие только что вошли в
+          Baseline. Это витрина прогресса, собранная из официальных RSS‑лент Web Platform DX.
+        </p>
+        <div class="page-meta">
+          <span>последняя проверка:</span>
+          <time datetime={buildTimestampISO}>{buildTimestampLabel}</time>
+        </div>
+        <div class="legend">
+          <span>
+            <span class="legend-indicator legend-indicator--widely"></span>
+            Widely available
+          </span>
+          <span>
+            <span class="legend-indicator legend-indicator--newly"></span>
+            Newly available
+          </span>
+        </div>
+      </header>
+
+      <section class="lists">
+        <FeatureList title="Везде поддерживается" features={widelyAvailable} accent="widely" />
+        <FeatureList title="Только что достигло Baseline" features={newlyAvailable} accent="newly" />
+      </section>
+    </main>
+  </body>
+</html>
