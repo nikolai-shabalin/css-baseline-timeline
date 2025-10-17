@@ -1,42 +1,39 @@
-name: Daily Content Refresh
+name: Update content
 
 on:
   schedule:
-    - cron: '0 3 * * *' # Ежедневно в 06:00 МСК
+    - cron: '0 21 * * *' # Каждый день в 00:00 МСК
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  build-and-deploy:
+  update-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - name: Check Out
+        uses: actions/checkout@v4.1.1
         with:
-          persist-credentials: false
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4.0.2
         with:
           node-version: 22
-          cache: 'pnpm'
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
-      - name: Install dependencies
+      - name: Installing Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build static site
+      - name: Building
         run: pnpm build
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          folder: dist
+          folder: ./dist
           branch: gh-pages
