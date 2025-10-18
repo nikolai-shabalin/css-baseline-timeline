@@ -20,25 +20,27 @@
   --accent-dark: #1a1610;
 }
 
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --bg-primary: #0e0c09;
-  --bg-card: #17130e;
-  --bg-card-accent-widely: radial-gradient(circle at 30% 40%, #4f6cff 0%, #152c8f 65%);
-  --bg-card-accent-newly: radial-gradient(circle at 30% 40%, #f26b49 0%, #a42718 65%);
-  --bg-body-layer-one: radial-gradient(90% 120% at 90% 10%, rgba(233, 86, 73, 0.22), transparent 55%);
-  --bg-body-layer-two: radial-gradient(70% 80% at 5% 75%, rgba(51, 126, 255, 0.26), transparent 60%);
-  --bg-body-layer-three: linear-gradient(135deg, #14100c 0%, #0e0c09 100%);
-  --text-primary: #f4ede1;
-  --text-muted: rgba(244, 237, 225, 0.75);
-  --text-subtle: rgba(244, 237, 225, 0.62);
-  --text-card-muted: rgba(244, 237, 225, 0.78);
-  --border-strong: #f4ede1;
-  --shadow-card-primary: rgba(0, 0, 0, 0.35);
-  --shadow-card-offset: rgba(0, 0, 0, 0.5);
-  --shadow-legend: rgba(0, 0, 0, 0.25);
-  --accent-light: #0e0c09;
-  --accent-dark: #f4ede1;
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg-primary: #0e0c09;
+    --bg-card: #17130e;
+    --bg-card-accent-widely: radial-gradient(circle at 30% 40%, #4f6cff 0%, #152c8f 65%);
+    --bg-card-accent-newly: radial-gradient(circle at 30% 40%, #f26b49 0%, #a42718 65%);
+    --bg-body-layer-one: radial-gradient(90% 120% at 90% 10%, rgba(233, 86, 73, 0.22), transparent 55%);
+    --bg-body-layer-two: radial-gradient(70% 80% at 5% 75%, rgba(51, 126, 255, 0.26), transparent 60%);
+    --bg-body-layer-three: linear-gradient(135deg, #14100c 0%, #0e0c09 100%);
+    --text-primary: #f4ede1;
+    --text-muted: rgba(244, 237, 225, 0.75);
+    --text-subtle: rgba(244, 237, 225, 0.62);
+    --text-card-muted: rgba(244, 237, 225, 0.78);
+    --border-strong: #f4ede1;
+    --shadow-card-primary: rgba(0, 0, 0, 0.35);
+    --shadow-card-offset: rgba(0, 0, 0, 0.5);
+    --shadow-legend: rgba(0, 0, 0, 0.25);
+    --accent-light: #0e0c09;
+    --accent-dark: #f4ede1;
+  }
 }
 
 *,

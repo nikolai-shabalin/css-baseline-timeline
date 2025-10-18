@@ -28,21 +28,6 @@ const buildTimestampLabel = dateFormatter.format(buildTimestamp);
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap"
     />
-    <script is:inline>
-      (() => {
-        const STORAGE_KEY = 'css-baseline-theme';
-        if (typeof window === 'undefined') return;
-        const mediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-        let storedTheme = null;
-        try {
-          storedTheme = window.localStorage.getItem(STORAGE_KEY);
-        } catch (error) {
-          storedTheme = null;
-        }
-        const theme = storedTheme ?? (mediaQuery?.matches ? 'dark' : 'light');
-        document.documentElement.dataset.theme = theme === 'dark' ? 'dark' : 'light';
-      })();
-    </script>
   </head>
   <body>
     <main>
