@@ -29,7 +29,7 @@ const buildTimestampLabel = dateFormatter.format(buildTimestamp);
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap"
     />
   </head>
-  <body>
+  <body id="top">
     <main>
       <header class="page-header">
         <h1 class="page-title">
@@ -62,5 +62,11 @@ const buildTimestampLabel = dateFormatter.format(buildTimestamp);
         <FeatureList title="Только что достигло Baseline" features={newlyAvailable} accent="newly" />
       </section>
     </main>
+    
+    <a href="#top" class="back-to-top" aria-label="Наверх">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
   </body>
 </html>
