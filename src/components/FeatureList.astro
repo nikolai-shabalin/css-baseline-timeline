@@ -18,12 +18,79 @@ const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
   day: 'numeric'
 });
 
+const monthYearFormatter = new Intl.DateTimeFormat('ru-RU', {
+  year: 'numeric',
+  month: 'long'
+});
+
 const formatDate = (input: string) => {
   if (!input) return '';
   const value = Date.parse(input);
   if (!Number.isFinite(value)) return '';
   return dateFormatter.format(new Date(value));
 };
+
+interface GroupedFeature {
+  year: number;
+  month: number;
+  label: string;
+  features: FeatureEntry[];
+}
+
+function groupByMonthYear(features: FeatureEntry[]): GroupedFeature[] {
+  const groups = new Map<string, GroupedFeature>();
+
+  features.forEach((feature) => {
+    const date = feature.updated ? new Date(feature.updated) : null;
+    
+    if (!date || !Number.isFinite(date.getTime())) {
+      // Элементы без даты в отдельную группу
+      const key = 'no-date';
+      if (!groups.has(key)) {
+        groups.set(key, {
+          year: 0,
+          month: 0,
+          label: 'Без даты',
+          features: []
+        });
+      }
+      groups.get(key)!.features.push(feature);
+      return;
+    }
+
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const key = `${year}-${month}`;
+
+    if (!groups.has(key)) {
+      const label = monthYearFormatter.format(date);
+      groups.set(key, {
+        year,
+        month,
+        label,
+        features: []
+      });
+    }
+
+    groups.get(key)!.features.push(feature);
+  });
+
+  // Сортируем группы: сначала по году (убывание), потом по месяцу (убывание)
+  const sortedGroups = Array.from(groups.values()).sort((a, b) => {
+    if (a.year === 0 && b.year === 0) return 0;
+    if (a.year === 0) return 1;
+    if (b.year === 0) return -1;
+    
+    if (a.year !== b.year) {
+      return b.year - a.year;
+    }
+    return b.month - a.month;
+  });
+
+  return sortedGroups;
+}
+
+const groupedFeatures = groupByMonthYear(features);
 ---
 
 <section class={`feature-list ${accentClass}`}>
@@ -35,24 +102,45 @@ const formatDate = (input: string) => {
     </p>
   </header>
 
-  <ol class="feature-list__items">
-    {features.map((feature, index) => (
-      <li class="feature-card" key={feature.id}>
-        <p class="feature-card__index">
-          <span>{String(index + 1).padStart(2, '0')}</span>
-        </p>
-        <div class="feature-card__body">
-          <h3 class="feature-card__title">
-            <a href={feature.link}>{feature.title}</a>
+  <div class="feature-list__groups">
+    {groupedFeatures.map((group, groupIndex) => {
+      let itemIndex = 0;
+      // Считаем индекс для элементов в предыдущих группах
+      for (let i = 0; i < groupIndex; i++) {
+        itemIndex += groupedFeatures[i].features.length;
+      }
+
+      return (
+        <div class="feature-group" key={`${group.year}-${group.month}`}>
+          <h3 class="feature-group__header">
+            <span class="feature-group__title">{group.label}</span>
+            <span class="feature-group__count">{group.features.length}</span>
           </h3>
-          {feature.summaryText && (
-            <p class="feature-card__summary">{feature.summaryText}</p>
-          )}
+          <ol class="feature-list__items">
+            {group.features.map((feature) => {
+              const currentIndex = itemIndex++;
+              return (
+                <li class="feature-card" key={feature.id}>
+                  <p class="feature-card__index">
+                    <span>{String(currentIndex + 1).padStart(2, '0')}</span>
+                  </p>
+                  <div class="feature-card__body">
+                    <h4 class="feature-card__title">
+                      <a href={feature.link}>{feature.title}</a>
+                    </h4>
+                    {feature.summaryText && (
+                      <p class="feature-card__summary">{feature.summaryText}</p>
+                    )}
+                  </div>
+                  <p class="feature-card__date">{formatDate(feature.updated)}</p>
+                </li>
+              );
+            })}
+          </ol>
         </div>
-        <p class="feature-card__date">{formatDate(feature.updated)}</p>
-      </li>
-    ))}
-  </ol>
+      );
+    })}
+  </div>
 </section>
 
 <style>
@@ -166,6 +254,74 @@ const formatDate = (input: string) => {
     margin-right: 0.4em;
   }
 
+  .feature-list__groups {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2rem, 3vw, 3rem);
+  }
+
+  .feature-group {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 1.5vw, 1.5rem);
+  }
+
+  .feature-group__header {
+    position: sticky;
+    top: 1rem;
+    z-index: 2;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    margin: 0;
+    background: var(--bg-card);
+    border: 2px solid var(--border-strong);
+    border-radius: 0.75rem;
+    box-shadow:
+      0.25rem 0.25rem 0 0 var(--shadow-card-offset),
+      0 4px 12px var(--shadow-card-primary);
+    backdrop-filter: blur(8px);
+  }
+
+  .feature-group__title {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    font-weight: 700;
+    text-transform: capitalize;
+    letter-spacing: 0.06em;
+    color: var(--text-primary);
+  }
+
+  .feature-group__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a1610;
+    color: #f7f3ea;
+    padding: 0.15em 0.6em;
+    border-radius: 2em;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .feature-group__header {
+      background: var(--bg-card);
+    }
+
+    .feature-group__count {
+      background: #f4ede1;
+      color: #1a1610;
+    }
+  }
+
   .feature-list__items {
     position: relative;
     z-index: 1;
@@ -247,6 +403,27 @@ const formatDate = (input: string) => {
 
     .feature-list__title {
       font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+    }
+
+    .feature-list__groups {
+      gap: clamp(1.5rem, 2.5vw, 2rem);
+    }
+
+    .feature-group__header {
+      position: relative;
+      top: 0;
+      padding: 0.6rem 0.85rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .feature-group__title {
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+    }
+
+    .feature-group__count {
+      font-size: 0.75rem;
     }
 
     .feature-card {
