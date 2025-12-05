@@ -79,7 +79,7 @@ a:hover {
 main {
   display: flex;
   flex-direction: column;
-  gap: clamp(3rem, 6vw, 6rem);
+  gap: clamp(2rem, 6vw, 3rem);
   padding: clamp(2rem, 5vw, 6rem);
 }
 
@@ -165,6 +165,50 @@ main {
 
 .legend-indicator--newly {
   background: var(--bg-card-accent-newly);
+}
+
+.page-search__input {
+  width: 100%;
+  padding: 0.85rem 1.2rem;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 2px solid var(--border-strong);
+  border-radius: 0.75rem;
+  box-shadow:
+    0.25rem 0.25rem 0 0 var(--shadow-card-offset),
+    0 4px 12px var(--shadow-card-primary);
+  transition: all 0.2s ease;
+  letter-spacing: 0.04em;
+}
+
+.page-search__input::placeholder {
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+}
+
+.page-search__input:focus {
+  outline: none;
+  box-shadow:
+    0.35rem 0.35rem 0 0 var(--shadow-card-offset),
+    0 6px 16px var(--shadow-card-primary);
+  transform: translateY(-1px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .page-search__input {
+    background: var(--bg-card);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-search__input {
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+  }
 }
 
 /* Кнопка "Наверх" */

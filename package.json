@@ -11,7 +11,7 @@
     "lint": "astro check"
   },
   "dependencies": {
-    "astro": "^5.15.4",
-    "fast-xml-parser": "^5.3.1"
+    "astro": "^5.16.4",
+    "fast-xml-parser": "^5.3.2"
   }
 }

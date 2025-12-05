@@ -58,6 +58,16 @@ const buildTimestampLabel = dateFormatter.format(buildTimestamp);
         </div>
       </header>
 
+      <div class="page-search">
+        <input
+          type="text"
+          class="page-search__input"
+          placeholder="Поиск по названию..."
+          aria-label="Поиск по названию свойств"
+          id="global-search"
+        />
+      </div>
+
       <section class="lists">
         <FeatureList title="Везде поддерживается" features={widelyAvailable} accent="widely" />
         <FeatureList title="Только что достигло Baseline" features={newlyAvailable} accent="newly" />
@@ -69,5 +79,105 @@ const buildTimestampLabel = dateFormatter.format(buildTimestamp);
         <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </a>
+
+    <script>
+      (function() {
+        const searchInput = document.getElementById('global-search') as HTMLInputElement | null;
+        
+        if (!searchInput) return;
+
+        function filterFeatures(searchTerm: string) {
+          const searchLower = searchTerm.toLowerCase().trim();
+          const allFeatureCards = document.querySelectorAll('.feature-card') as NodeListOf<HTMLElement>;
+          const allGroups = document.querySelectorAll('.feature-group') as NodeListOf<HTMLElement>;
+          const allFeatureLists = document.querySelectorAll('.feature-list') as NodeListOf<HTMLElement>;
+          
+          // Фильтруем все карточки на странице
+          allFeatureCards.forEach((card) => {
+            const titleElement = card.querySelector('.feature-card__title');
+            const title = titleElement ? (titleElement.textContent || '').toLowerCase() : '';
+            const matches = searchLower === '' || title.includes(searchLower);
+            
+            if (matches) {
+              card.style.display = '';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+          
+          // Скрываем группы, в которых нет видимых элементов
+          allGroups.forEach((group) => {
+            const visibleCards = group.querySelectorAll('.feature-card:not([style*="display: none"])');
+            const groupHeader = group.querySelector('.feature-group__header');
+            
+            if (visibleCards.length === 0 && searchLower !== '') {
+              group.style.display = 'none';
+            } else {
+              group.style.display = '';
+              if (groupHeader) {
+                const countSpan = groupHeader.querySelector('.feature-group__count');
+                if (countSpan) {
+                  // Восстанавливаем оригинальный счетчик или показываем отфильтрованный
+                  const originalCount = countSpan.getAttribute('data-original-count');
+                  if (searchLower === '') {
+                    if (originalCount) {
+                      countSpan.textContent = originalCount;
+                    }
+                  } else {
+                    countSpan.textContent = String(visibleCards.length);
+                  }
+                }
+              }
+            }
+          });
+
+          // Скрываем списки, в которых нет видимых элементов
+          allFeatureLists.forEach((list) => {
+            const visibleCards = list.querySelectorAll('.feature-card:not([style*="display: none"])');
+            const countElement = list.querySelector('.feature-list__count span');
+            
+            if (countElement) {
+              if (searchLower === '') {
+                const originalCount = countElement.getAttribute('data-original-count');
+                if (originalCount) {
+                  countElement.textContent = originalCount;
+                }
+              } else {
+                countElement.textContent = String(visibleCards.length);
+              }
+            }
+          });
+        }
+
+        // Сохраняем оригинальные счетчики при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+          document.querySelectorAll('.feature-group__count').forEach((count) => {
+            if (!count.getAttribute('data-original-count')) {
+              count.setAttribute('data-original-count', count.textContent || '');
+            }
+          });
+          document.querySelectorAll('.feature-list__count span').forEach((count) => {
+            if (!count.getAttribute('data-original-count')) {
+              count.setAttribute('data-original-count', count.textContent || '');
+            }
+          });
+        });
+
+        // Debounce функция для задержки поиска
+        let searchTimeout: ReturnType<typeof setTimeout> | undefined;
+        searchInput.addEventListener('input', () => {
+          // Очищаем предыдущий таймер, если он существует
+          if (searchTimeout) {
+            clearTimeout(searchTimeout);
+          }
+          
+          // Устанавливаем новый таймер на 300ms
+          // Поиск выполнится только через 300ms после последнего ввода
+          searchTimeout = setTimeout(() => {
+            filterFeatures(searchInput.value);
+          }, 300);
+        });
+      })();
+    </script>
   </body>
 </html>
