@@ -127,6 +127,14 @@ const groupedFeatures = groupByMonthYear(features);
                   <div class="feature-card__body">
                     <h4 class="feature-card__title">
                       <a href={feature.link}>{feature.title}</a>
+                      <a
+                        class="feature-card__anchor"
+                        href={`/?property=${encodeURIComponent(feature.title)}`}
+                        data-property-link={feature.title}
+                        aria-label={`Скопировать ссылку на ${feature.title}`}
+                      >
+                        #
+                      </a>
                     </h4>
                     {feature.summaryText && (
                       <p class="feature-card__summary">{feature.summaryText}</p>
@@ -369,6 +377,9 @@ const groupedFeatures = groupByMonthYear(features);
     font-size: 1.2rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .feature-card__title a {
@@ -378,6 +389,25 @@ const groupedFeatures = groupByMonthYear(features);
 
   .feature-card__title a:hover {
     border-color: currentColor;
+  }
+
+  .feature-card__anchor {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    color: var(--text-subtle);
+    text-decoration: none;
+    font-size: 0.9em;
+    padding: 0 0.2em;
+    border-bottom: none !important;
+  }
+
+  .feature-card__anchor:hover {
+    opacity: 1;
+    color: var(--text-primary);
+  }
+
+  .feature-card:hover .feature-card__anchor {
+    opacity: 0.6;
   }
 
   .feature-card__summary {

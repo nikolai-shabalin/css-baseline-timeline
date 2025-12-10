@@ -60,7 +60,7 @@ const buildTimestampLabel = dateFormatter.format(buildTimestamp);
 
       <div class="page-search">
         <input
-          type="text"
+          type="search"
           class="page-search__input"
           placeholder="Поиск по названию..."
           aria-label="Поиск по названию свойств"
@@ -149,7 +149,7 @@ const buildTimestampLabel = dateFormatter.format(buildTimestamp);
           });
         }
 
-        // Сохраняем оригинальные счетчики при загрузке
+        // Сохраняем оригинальные счетчики при загрузке и применяем фильтр из query
         document.addEventListener('DOMContentLoaded', () => {
           document.querySelectorAll('.feature-group__count').forEach((count) => {
             if (!count.getAttribute('data-original-count')) {
@@ -161,6 +161,14 @@ const buildTimestampLabel = dateFormatter.format(buildTimestamp);
               count.setAttribute('data-original-count', count.textContent || '');
             }
           });
+
+          // Если есть параметр ?property= в URL — применяем его к поиску
+          const params = new URLSearchParams(window.location.search);
+          const propertyQuery = params.get('property');
+          if (propertyQuery) {
+            searchInput.value = propertyQuery;
+            filterFeatures(propertyQuery);
+          }
         });
 
         // Debounce функция для задержки поиска
@@ -176,6 +184,35 @@ const buildTimestampLabel = dateFormatter.format(buildTimestamp);
           searchTimeout = setTimeout(() => {
             filterFeatures(searchInput.value);
           }, 300);
+        });
+
+        // Клик по # рядом с названием: обновляет URL, фильтр и копирует ссылку
+        document.addEventListener('click', async (event) => {
+          const target = event.target as HTMLElement | null;
+          const anchor = target?.closest('[data-property-link]') as HTMLElement | null;
+          if (!anchor) return;
+
+          event.preventDefault();
+
+          const propertyName = anchor.getAttribute('data-property-link') || '';
+          if (!propertyName) return;
+
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.set('property', propertyName);
+
+          // Обновляем адресную строку без перезагрузки
+          window.history.replaceState({}, '', newUrl);
+
+          // Обновляем поле поиска и фильтрацию
+          searchInput.value = propertyName;
+          filterFeatures(propertyName);
+
+          // Копируем ссылку в буфер обмена
+          try {
+            await navigator.clipboard.writeText(newUrl.toString());
+          } catch (err) {
+            console.error('Не удалось скопировать ссылку', err);
+          }
         });
       })();
     </script>
