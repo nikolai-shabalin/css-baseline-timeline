@@ -30,6 +30,20 @@ const formatDate = (input: string) => {
   return dateFormatter.format(new Date(value));
 };
 
+const addMonths = (date: Date, months: number): Date => {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return result;
+};
+
+const getWidelyAvailableDate = (input: string) => {
+  if (!input) return '';
+  const value = Date.parse(input);
+  if (!Number.isFinite(value)) return '';
+  const widelyDate = addMonths(new Date(value), 30); // +2.5 года = 30 месяцев
+  return dateFormatter.format(widelyDate);
+};
+
 interface GroupedFeature {
   year: number;
   month: number;
@@ -140,7 +154,14 @@ const groupedFeatures = groupByMonthYear(features);
                       <p class="feature-card__summary">{feature.summaryText}</p>
                     )}
                   </div>
+                  {accent === 'newly' ? (
+                  <p class="feature-card__date">
+                    {formatDate(feature.updated)}
+                    <span class="feature-card__widely-date">→ Widely: {getWidelyAvailableDate(feature.updated)}</span>
+                  </p>
+                ) : (
                   <p class="feature-card__date">{formatDate(feature.updated)}</p>
+                )}
                 </li>
               );
             })}
@@ -424,6 +445,15 @@ const groupedFeatures = groupByMonthYear(features);
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--text-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+  }
+
+  .feature-card__widely-date {
+    color: var(--text-card-muted);
+    opacity: 0.7;
   }
 
   @media (max-width: 720px) {
