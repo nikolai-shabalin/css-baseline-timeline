@@ -108,10 +108,10 @@ function stripHtml(html: string): string {
   return html
     .replace(/<\/?[^>]+(>|$)/g, '')
     .replace(/\s+/g, ' ')
-    .replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) => {
+    .replace(/&#x([0-9A-Fa-f]+);/g, (_match, hex) => {
       return String.fromCharCode(parseInt(hex, 16));
     })
-    .replace(/&#(\d+);/g, (match, dec) => {
+    .replace(/&#(\d+);/g, (_match, dec) => {
       return String.fromCharCode(parseInt(dec, 10));
     })
     .replace(/&lt;/g, '<')

@@ -125,7 +125,7 @@ const groupedFeatures = groupByMonthYear(features);
       }
 
       return (
-        <div class="feature-group" key={`${group.year}-${group.month}`}>
+        <div class="feature-group">
           <h3 class="feature-group__header">
             <span class="feature-group__title">{group.label}</span>
             <span class="feature-group__count">{group.features.length}</span>
@@ -134,7 +134,7 @@ const groupedFeatures = groupByMonthYear(features);
             {group.features.map((feature) => {
               const currentIndex = itemIndex++;
               return (
-                <li class="feature-card" key={feature.id} data-feature-title={feature.title.toLowerCase()}>
+                <li class="feature-card" data-feature-title={feature.title.toLowerCase()}>
                   <p class="feature-card__index">
                     <span>{String(currentIndex + 1).padStart(2, '0')}</span>
                   </p>
