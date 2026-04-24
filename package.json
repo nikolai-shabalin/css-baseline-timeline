@@ -5,17 +5,16 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "lint": "astro check"
   },
   "dependencies": {
-    "astro": "^6.1.5",
-    "fast-xml-parser": "^5.5.11"
+    "astro": "^6.1.9",
+    "fast-xml-parser": "^5.7.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.3"
   }
 }
