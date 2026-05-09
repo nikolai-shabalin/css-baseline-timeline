@@ -23,6 +23,11 @@ const monthYearFormatter = new Intl.DateTimeFormat('ru-RU', {
   month: 'long'
 });
 
+const shortMonthYearFormatter = new Intl.DateTimeFormat('ru-RU', {
+  year: 'numeric',
+  month: 'short'
+});
+
 const formatDate = (input: string) => {
   if (!input) return '';
   const value = Date.parse(input);
@@ -36,18 +41,16 @@ const addMonths = (date: Date, months: number): Date => {
   return result;
 };
 
-const getWidelyAvailableDate = (input: string) => {
-  if (!input) return '';
-  const value = Date.parse(input);
-  if (!Number.isFinite(value)) return '';
-  const widelyDate = addMonths(new Date(value), 30); // +2.5 года = 30 месяцев
-  return dateFormatter.format(widelyDate);
+const getWidelyAvailableMonth = (date: Date) => {
+  const widelyDate = addMonths(date, 30); // +2.5 года = 30 месяцев
+  return shortMonthYearFormatter.format(widelyDate);
 };
 
 interface GroupedFeature {
   year: number;
   month: number;
   label: string;
+  widelyLabel: string;
   features: FeatureEntry[];
 }
 
@@ -65,6 +68,7 @@ function groupByMonthYear(features: FeatureEntry[]): GroupedFeature[] {
           year: 0,
           month: 0,
           label: 'Без даты',
+          widelyLabel: '',
           features: []
         });
       }
@@ -82,6 +86,7 @@ function groupByMonthYear(features: FeatureEntry[]): GroupedFeature[] {
         year,
         month,
         label,
+        widelyLabel: getWidelyAvailableMonth(date),
         features: []
       });
     }
@@ -127,7 +132,12 @@ const groupedFeatures = groupByMonthYear(features);
       return (
         <div class="feature-group">
           <h3 class="feature-group__header">
-            <span class="feature-group__title">{group.label}</span>
+            <span class="feature-group__title">
+              {group.label}
+              {accent === 'newly' && group.widelyLabel && (
+                <span class="feature-group__widely-date">→ Widely: {group.widelyLabel}</span>
+              )}
+            </span>
             <span class="feature-group__count">{group.features.length}</span>
           </h3>
           <ol class="feature-list__items">
@@ -154,14 +164,7 @@ const groupedFeatures = groupByMonthYear(features);
                       <p class="feature-card__summary">{feature.summaryText}</p>
                     )}
                   </div>
-                  {accent === 'newly' ? (
-                  <p class="feature-card__date">
-                    {formatDate(feature.updated)}
-                    <span class="feature-card__widely-date">→ Widely: {getWidelyAvailableDate(feature.updated)}</span>
-                  </p>
-                ) : (
-                  <p class="feature-card__date">{formatDate(feature.updated)}</p>
-                )}
+                  {accent === 'widely' && <p class="feature-card__date">{formatDate(feature.updated)}</p>}
                 </li>
               );
             })}
@@ -324,6 +327,13 @@ const groupedFeatures = groupByMonthYear(features);
     color: var(--text-primary);
   }
 
+  .feature-group__widely-date {
+    display: inline-block;
+    margin-left: 0.6em;
+    color: var(--text-card-muted);
+    opacity: 0.75;
+  }
+
   .feature-group__count {
     display: inline-flex;
     align-items: center;
@@ -451,11 +461,6 @@ const groupedFeatures = groupByMonthYear(features);
     gap: 0.5rem 1rem;
   }
 
-  .feature-card__widely-date {
-    color: var(--text-card-muted);
-    opacity: 0.7;
-  }
-
   @media (max-width: 720px) {
     .feature-list {
       padding: 1.6rem;
@@ -480,6 +485,12 @@ const groupedFeatures = groupByMonthYear(features);
 
     .feature-group__title {
       font-size: clamp(1rem, 1.8vw, 1.2rem);
+    }
+
+    .feature-group__widely-date {
+      display: block;
+      margin-left: 0;
+      margin-top: 0.35rem;
     }
 
     .feature-group__count {
