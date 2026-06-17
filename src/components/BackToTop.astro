@@ -1,0 +1,61 @@
+<a href="#top" class="back-to-top" aria-label="Наверх">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7 14L12 9L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+</a>
+
+<style>
+.back-to-top {
+  position: sticky;
+  bottom: 2rem;
+  left: calc(100vw - 2rem);
+  z-index: 1000;
+  animation: float 3s ease-in-out infinite;
+  margin-top: 110vh;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 2px solid var(--border-strong);
+  border-right: none;
+  border-radius: 50% 0 0 50%;
+  box-shadow:
+    0.25em 0.25em 0 0 var(--shadow-card-primary),
+    0.1em 0.1em 0 0 var(--shadow-card-offset);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.back-to-top:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0.35em 0.35em 0 0 var(--shadow-card-primary),
+    0.15em 0.15em 0 0 var(--shadow-card-offset);
+  text-decoration: none;
+}
+
+.back-to-top:active {
+  transform: translateY(0);
+  box-shadow:
+    0.15em 0.15em 0 0 var(--shadow-card-primary),
+    0.05em 0.05em 0 0 var(--shadow-card-offset);
+}
+
+.back-to-top svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+</style>
