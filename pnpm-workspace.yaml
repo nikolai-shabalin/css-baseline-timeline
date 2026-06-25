@@ -3,3 +3,4 @@ allowBuilds:
   sharp: true
 minimumReleaseAgeExclude:
   - fast-xml-parser@5.9.2
+  - astro@7.0.3
