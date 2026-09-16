@@ -10,11 +10,11 @@
     "lint": "astro check"
   },
   "dependencies": {
-    "astro": "^7.0.7",
-    "fast-xml-parser": "^5.9.3"
+    "astro": "^7.3.2",
+    "fast-xml-parser": "^5.11.1"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.9",
+    "@astrojs/check": "^0.9.10",
     "typescript": "^6.0.3"
   }
 }
